@@ -41,7 +41,10 @@ def raw_snapshot_path(base_dir: str | Path, company_name: str, snapshot_date: st
 def collect_company_sources(company_name: str, base_dir: str | Path, snapshot_date: str) -> list[Path]:
     saved_files: list[Path] = []
     for source in get_company_sources(company_name):
-        text = fetch_text(source["url"])
+        try:
+            text = fetch_text(source["url"])
+        except Exception as exc:  # keep the MVP resilient so one bad page doesn't fail the run
+            text = f"ERROR fetching {source['url']}: {exc}"
         output_path = raw_snapshot_path(base_dir, company_name, snapshot_date, source["type"])
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(text, encoding="utf-8")

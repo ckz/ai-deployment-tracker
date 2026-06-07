@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS evidence (
     captured_date TEXT NOT NULL,
     quote_or_summary TEXT NOT NULL,
     confidence_score REAL NOT NULL,
+    content_hash TEXT NOT NULL,
     FOREIGN KEY (company_id) REFERENCES companies(id)
 );
 
