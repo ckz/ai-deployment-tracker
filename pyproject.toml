@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-deployment-tracker"
+version = "0.1.0"
+description = "Continuous market intelligence for AI deployment and platform companies"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "ckz", email = "ck@seeice.com"}]
+
+[tool.setuptools]
+py-modules = []
