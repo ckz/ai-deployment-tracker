@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Modal",
+    "category": "ai_gpu_platform",
+    "website": "https://modal.com",
+    "priority_score": 95,
+    "notes": "Serverless compute for AI/data workloads"
+  },
+  {
+    "name": "Baseten",
+    "category": "ai_gpu_platform",
+    "website": "https://www.baseten.co",
+    "priority_score": 93,
+    "notes": "Production inference and model serving"
+  },
+  {
+    "name": "Railway",
+    "category": "developer_cloud",
+    "website": "https://railway.app",
+    "priority_score": 90,
+    "notes": "Developer cloud and deployment platform"
+  },
+  {
+    "name": "Fal.ai",
+    "category": "ai_gpu_platform",
+    "website": "https://fal.ai",
+    "priority_score": 91,
+    "notes": "AI media and inference platform"
+  },
+  {
+    "name": "RunPod",
+    "category": "ai_gpu_platform",
+    "website": "https://www.runpod.io",
+    "priority_score": 90,
+    "notes": "GPU cloud and inference workloads"
+  },
+  {
+    "name": "Fireworks AI",
+    "category": "ai_gpu_platform",
+    "website": "https://fireworks.ai",
+    "priority_score": 92,
+    "notes": "Model serving and inference optimization"
+  },
+  {
+    "name": "Together AI",
+    "category": "ai_gpu_platform",
+    "website": "https://www.together.ai",
+    "priority_score": 92,
+    "notes": "Model hosting and inference platform"
+  },
+  {
+    "name": "Northflank",
+    "category": "developer_cloud",
+    "website": "https://northflank.com",
+    "priority_score": 85,
+    "notes": "Dev platform with strong deployment workflows"
+  },
+  {
+    "name": "Coolify",
+    "category": "self_hosted_paas",
+    "website": "https://coolify.io",
+    "priority_score": 84,
+    "notes": "Open-source self-hosted PaaS"
+  },
+  {
+    "name": "Replicate",
+    "category": "ai_gpu_platform",
+    "website": "https://replicate.com",
+    "priority_score": 89,
+    "notes": "Model hosting and inference API platform"
+  }
+]
