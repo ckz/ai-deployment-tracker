@@ -22,6 +22,12 @@ From the repo root:
 python src/tracker.py
 ```
 
+Or use the helper wrapper:
+
+```bash
+bash scripts/run_daily_tracker.sh
+```
+
 This will:
 - load the 10-company watchlist
 - fetch the configured source pages
@@ -29,3 +35,17 @@ This will:
 - store state in `data/tracker.db`
 - generate a daily report in `reports/daily/YYYY-MM-DD.md`
 - update `reports/index.html` for GitHub Pages
+
+## Daily Hermes cron job
+
+The repo now includes a GitHub Pages workflow and a Hermes cron helper script at:
+
+- `~/.hermes/scripts/ai-deployment-tracker-daily.sh`
+
+That helper will:
+- source `~/.hermes/.env` if present
+- run the tracker
+- commit any new `reports/` output
+- push to `origin/main`
+
+GitHub Actions then deploys the generated `reports/` folder to GitHub Pages.
