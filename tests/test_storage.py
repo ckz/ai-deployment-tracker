@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from storage import get_latest_snapshot, init_db, upsert_company, upsert_evidence, upsert_snapshot
 
 
@@ -38,6 +36,7 @@ def test_storage_round_trip(tmp_path):
             "snapshot_date": "2026-06-07",
             "score": 97,
             "summary": "Strong momentum",
+            "evidence_signature": "sig-123",
         },
     )
 
@@ -48,3 +47,4 @@ def test_storage_round_trip(tmp_path):
     assert latest is not None
     assert latest["score"] == 97
     assert latest["summary"] == "Strong momentum"
+    assert latest["evidence_signature"] == "sig-123"

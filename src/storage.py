@@ -23,6 +23,12 @@ def init_db(db_path: str | Path) -> None:
     schema = SCHEMA_PATH.read_text(encoding="utf-8")
     with _connect(db_path) as conn:
         conn.executescript(schema)
+        existing_columns = {
+            row["name"]
+            for row in conn.execute("PRAGMA table_info(daily_snapshots)").fetchall()
+        }
+        if "evidence_signature" not in existing_columns:
+            conn.execute("ALTER TABLE daily_snapshots ADD COLUMN evidence_signature TEXT")
         conn.commit()
 
 
@@ -93,18 +99,24 @@ def upsert_snapshot(db_path: str | Path, snapshot: dict[str, Any]) -> int:
         ).fetchone()
         if row:
             conn.execute(
-                "UPDATE daily_snapshots SET score = ?, summary = ? WHERE id = ?",
-                (snapshot["score"], snapshot["summary"], row["id"]),
+                "UPDATE daily_snapshots SET score = ?, summary = ?, evidence_signature = ? WHERE id = ?",
+                (snapshot["score"], snapshot["summary"], snapshot.get("evidence_signature"), row["id"]),
             )
             conn.commit()
             return int(row["id"])
 
         cursor = conn.execute(
             """
-            INSERT INTO daily_snapshots (company_id, snapshot_date, score, summary)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO daily_snapshots (company_id, snapshot_date, score, summary, evidence_signature)
+            VALUES (?, ?, ?, ?, ?)
             """,
-            (snapshot["company_id"], snapshot["snapshot_date"], snapshot["score"], snapshot["summary"]),
+            (
+                snapshot["company_id"],
+                snapshot["snapshot_date"],
+                snapshot["score"],
+                snapshot["summary"],
+                snapshot.get("evidence_signature"),
+            ),
         )
         conn.commit()
         return int(cursor.lastrowid)
@@ -114,7 +126,7 @@ def get_latest_snapshot(db_path: str | Path, company_id: int) -> dict[str, Any] 
     with _connect(db_path) as conn:
         row = conn.execute(
             """
-            SELECT company_id, snapshot_date, score, summary
+            SELECT company_id, snapshot_date, score, summary, evidence_signature
             FROM daily_snapshots
             WHERE company_id = ?
             ORDER BY snapshot_date DESC, id DESC
@@ -129,7 +141,7 @@ def get_previous_snapshot(db_path: str | Path, company_id: int, snapshot_date: s
     with _connect(db_path) as conn:
         row = conn.execute(
             """
-            SELECT company_id, snapshot_date, score, summary
+            SELECT company_id, snapshot_date, score, summary, evidence_signature
             FROM daily_snapshots
             WHERE company_id = ? AND snapshot_date < ?
             ORDER BY snapshot_date DESC, id DESC

@@ -81,6 +81,23 @@ def summarize_texts(texts: list[str]) -> str:
     return f"Positive signals: {', '.join(hits[:5])}"
 
 
+def classify_change(previous: dict | None, current_signature: str, current_score: int, current_summary: str) -> str:
+    if previous is None:
+        return "new"
+    if previous.get("evidence_signature") == current_signature:
+        return "ongoing"
+
+    previous_score = int(previous.get("score", 0))
+    previous_summary = str(previous.get("summary", ""))
+    if current_score > previous_score:
+        return "improved"
+    if current_score < previous_score:
+        return "weakened"
+    if current_summary != previous_summary:
+        return "updated"
+    return "ongoing"
+
+
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
@@ -99,16 +116,16 @@ def main() -> int:
         company_id = upsert_company(args.db, company)
         company_sources = get_company_sources(company["name"])
         snapshot_paths = collect_company_sources(company["name"], args.data_dir, today)
-        evidence_texts: list[str] = []
+        successful_texts: list[str] = []
         source_count = len(snapshot_paths)
         new_evidence_count = 0
 
         for source, path in zip(company_sources, snapshot_paths):
             text = path.read_text(encoding="utf-8")
-            evidence_texts.append(text)
             if text.startswith("ERROR fetching"):
                 continue
 
+            successful_texts.append(text)
             evidence_hash = content_hash(text)
             upsert_evidence(
                 args.db,
@@ -126,10 +143,12 @@ def main() -> int:
             )
             new_evidence_count += 1
 
-        score = score_company(company["priority_score"], evidence_texts)
+        evidence_signature = content_hash("\n".join(sorted(successful_texts))) if successful_texts else ""
+        score = score_company(company["priority_score"], successful_texts)
         previous = get_previous_snapshot(args.db, company_id, today)
         delta = score - previous["score"] if previous else 0
-        summary = summarize_texts(evidence_texts)
+        summary = summarize_texts(successful_texts)
+        change_type = classify_change(previous, evidence_signature, score, summary)
 
         upsert_snapshot(
             args.db,
@@ -138,6 +157,7 @@ def main() -> int:
                 "snapshot_date": today,
                 "score": score,
                 "summary": summary,
+                "evidence_signature": evidence_signature,
             },
         )
 
@@ -148,6 +168,7 @@ def main() -> int:
                 "score": score,
                 "delta": delta,
                 "summary": summary,
+                "change_type": change_type,
                 "sources": source_count,
                 "new_evidence": new_evidence_count,
             }
@@ -168,7 +189,7 @@ def main() -> int:
     print(f"Loaded {len(companies)} companies from {args.companies}")
     print(f"Wrote daily report to {report_path}")
     for row in sorted(report_rows, key=lambda item: (-item["delta"], -item["score"], item["name"])):
-        print(f"- {row['name']}: {row['score']} ({row['delta']:+d})")
+        print(f"- {row['name']}: {row['score']} ({row['delta']:+d}) [{row['change_type']}]")
     return 0
 
 

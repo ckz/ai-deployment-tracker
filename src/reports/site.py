@@ -8,7 +8,7 @@ from html import escape
 def render_index_page(report_date: str, report_relpath: str, rows: list[dict]) -> str:
     rows = sorted(rows, key=lambda row: (-row["score"], row["name"]))
     items = "\n".join(
-        f"<li><strong>{escape(row['name'])}</strong> — score {row['score']} ({row['delta']:+d}) — {escape(row['summary'])}</li>"
+        f"<li><strong>{escape(row['name'])}</strong> — score {row['score']} ({row['delta']:+d}) — {escape(row.get('change_type', 'ongoing'))} — {escape(row['summary'])}</li>"
         for row in rows
     )
     return f"""<!doctype html>

@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS daily_snapshots (
     snapshot_date TEXT NOT NULL,
     score INTEGER NOT NULL,
     summary TEXT NOT NULL,
+    evidence_signature TEXT,
     FOREIGN KEY (company_id) REFERENCES companies(id)
 );
 
