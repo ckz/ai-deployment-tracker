@@ -36,13 +36,20 @@ This will:
 - generate a daily report in `reports/daily/YYYY-MM-DD.md`
 - update `reports/index.html` for GitHub Pages
 
-## Daily Hermes cron job
+## Hermes cron automation
 
-The repo now includes a GitHub Pages workflow and a Hermes cron helper script at:
+The repo now includes:
 
-- `~/.hermes/scripts/ai-deployment-tracker-daily.sh`
+- `docs/research-rubric.md` — shared scoring, dedupe, and sector-selection rubric
+- `~/.hermes/scripts/ai-deployment-tracker-daily.sh` — daily helper that runs the tracker and pushes report updates
+- `.github/workflows/pages.yml` — GitHub Pages deployment for the generated `reports/` folder
 
-That helper will:
+The Hermes cron setup now runs three jobs:
+- daily tracker briefing
+- daily adjacent-sector discovery
+- weekly summary that merges both daily streams and dedupes overlap
+
+The daily helper will:
 - source `~/.hermes/.env` if present
 - run the tracker
 - commit any new `reports/` output
